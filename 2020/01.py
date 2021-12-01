@@ -1,6 +1,6 @@
 
 def get_answer(lines):
-    print(lines)
+    # print(lines)
     lowwater = 0
     highwater = len(lines) - 1
     j = highwater
@@ -10,10 +10,10 @@ def get_answer(lines):
         sum = lines[lowwater] + lines[j]
         if sum == 2020:
             return(lines[lowwater] * lines[j])
-        elif lowwater == (j-1) or sum < 2000:
+        elif lowwater == (j-1) or sum < 2020:
             lowwater += 1
             j = highwater
-        elif sum > 2000:
+        elif sum > 2020:
             j -= 1
     print(f"highwater= {j}, lowwater= {lowwater}")
     return(0)
