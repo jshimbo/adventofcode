@@ -5,16 +5,14 @@ def check_triple(lines, anchor, target):
 
     while lowwater < j:
         sum = lines[anchor] + lines[lowwater] + lines[j]
-        if sum == target:
-            print(f"anchor= {anchor} j= {lowwater} k={j}")
-            return(lines[anchor] * lines[lowwater] * lines[j])
+        if sum > target:
+            j -= 1
         elif lowwater == (j-1) or sum < target:
             lowwater += 1
             j = highwater
-        elif sum > target:
-            j -= 1
-    # print(f"highwater= {j}, lowwater= {lowwater}")
-    # print(f"anchor= {anchor}")
+        elif sum == target:
+            print(f"highwater= {j}, lowwater= {lowwater}, anchor= {anchor}")
+            return(lines[anchor] * lines[lowwater] * lines[j])
     return(0)
 
 
