@@ -16,9 +16,11 @@ def score_board(board):
 
 
 def check_cols(board):
-    for col in range(5):
+    col_range = range(5)
+    row_range = col_range
+    for col in col_range:
         sum = 0
-        for row in range(5):
+        for row in row_range:
             sum += board[row][col]
         if sum == -5:
             return(True)
@@ -26,9 +28,11 @@ def check_cols(board):
 
 
 def check_rows(board):
-    for row in range(5):
+    col_range = range(5)
+    row_range = col_range
+    for row in row_range:
         sum = 0
-        for col in range(5):
+        for col in col_range:
             sum += board[row][col]
         if sum == -5:
             return(True)
