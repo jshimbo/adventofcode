@@ -51,16 +51,15 @@ def main():
     boards = []
     input_file = "04-input"
     new_board = []
+    last_winning_board = False
     score = 0
 
-    """
-    Get BINGO numbers
-    """
     with open(input_file) as fp:
         for line in fp:
             line = line.strip()
 
             if not numbers:
+                # get bingo numbers
                 num_strings = line.split(',')
                 for n in num_strings:
                     numbers.append(int(n))
@@ -79,32 +78,35 @@ def main():
 
                 new_board.append(new_line)
 
+    # In case last line of input is not blank
     if new_board:
         boards.append(new_board)
 
     # Run the bingo game
-    print(numbers)
+    # print(numbers)
     for number in numbers:
-        """
-        mark boards
-        """
+        # mark boards
         for board_num in range(len(boards)):
             board = boards[board_num]
-            if not board:
-                continue
-            for row in range(5):
-                for col in range(5):
-                    if board[row][col] == number:
-                        # print("hit")
-                        board[row][col] = -1
-            if check_bingo(board):
-                print("bingo!")
-                print(board)
-                print("Last number = ", number)
-                score = score_board(board)
-                print("Prelim score = ", score)
-                print("Final score = ", score * number)
-                boards[board_num] = False
+            if board:
+                # mark the board
+                for row in range(5):
+                    for col in range(5):
+                        if board[row][col] == number:
+                            # print("hit")
+                            board[row][col] = -1
+                if check_bingo(board):
+                    last_winning_board = board
+                    last_winning_num = number
+                    # Burn winning board
+                    boards[board_num] = False
+
+    print("bingo!")
+    print(last_winning_board)
+    print("Last number = ", last_winning_num)
+    score = score_board(last_winning_board)
+    print("Prelim score = ", score)
+    print("Final score = ", score * last_winning_num)
 
 
 if __name__ == '__main__':

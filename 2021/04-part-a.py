@@ -56,21 +56,19 @@ def main():
     row = 0
     score = 0
 
-    """
-    Get BINGO numbers
-    """
     with open(input_file) as fp:
         for line in fp:
             line = line.strip()
 
             if not numbers:
+                # First line is bingo numbers
                 num_strings = line.split(',')
                 for n in num_strings:
                     numbers.append(int(n))
                 continue
 
             if not line:
-                # end of board (or bingo numbers)
+                # Blank line between numbers and boards
                 if new_board:
                     boards.append(new_board)
                     new_board = []
@@ -85,6 +83,7 @@ def main():
                 row += 1
 
     if new_board:
+        # Append last board (e.g., last line not blank)
         boards.append(new_board)
 
     # Run the bingo game
