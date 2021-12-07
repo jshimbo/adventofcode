@@ -2,21 +2,21 @@ import sys
 
 
 def sigma_n(n):
-    return ((n*(n+1))/2)
+    """
+    Calculate sum of first n positive integers
+    """
+    return (int((n*(n+1))/2))
 
 
 def calc_cost(crabs, target, cost_to_beat):
     cost = 0
     for guess in crabs:
         if target != guess:
-            # num_crabs = crabs.get(guess)
+            num_crabs = crabs.get(guess)
             distance = abs(target - guess)
-            sub_total = 0
-            x = 1  # skip distance = 0
-            while x <= distance:
-                sub_total += x
-                x += 1
-            cost += sub_total * crabs.get(guess)
+
+            sub_total = sigma_n(distance)
+            cost += sub_total * num_crabs
 
         if cost > cost_to_beat:
             cost = False
@@ -28,7 +28,7 @@ def calc_cost(crabs, target, cost_to_beat):
 def make_best_guess(crabs):
     """
     Take a rough average.
-    Taking the post populous position did not work well
+    Taking the most populous position did not work well.
     """
     sum = 0
     pop = 0
@@ -74,7 +74,7 @@ def main():
     for x in range(lowest, highest+1):
         cost = calc_cost(crabs, x, cost_to_beat)
         if cost and cost < cost_to_beat:
-            print("Position", x, "Cost", cost)
+            print("Better answer is", cost, "for position", x)
             cost_to_beat = cost
 
 
