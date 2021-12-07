@@ -1,81 +1,49 @@
 import sys
 
-
-def sigma_n(n):
-    """
-    Calculate sum of first n positive integers
-    """
-    return (int((n*(n+1))/2))
-
-
-def calc_cost(crabs, target, cost_to_beat):
-    cost = 0
-    for guess in crabs:
-        if target != guess:
-            num_crabs = crabs.get(guess)
-            distance = abs(target - guess)
-
-            sub_total = sigma_n(distance)
-            cost += sub_total * num_crabs
-
-        if cost > cost_to_beat:
-            cost = False
-            break
-
-    return(cost)
+"""
+Changes to my original solution
+* Remove best guess trial run due to complexity
+* Unify parts 1 and 2 by using lambdas, per
+  per https://twitter.com/_alelouis/status/1468137246343585792
+"""
 
 
-def make_best_guess(crabs):
-    """
-    Take a rough average.
-    Taking the most populous position did not work well.
-    """
-    sum = 0
-    pop = 0
-    for x in crabs:
-        y = crabs.get(x)
-        pop += y
-        sum += x * y
-    return(int(sum/pop))
+def solve(crabs, f):
+    locations = crabs.keys()
+    line_range = range(min(locations), max(locations)+1)
+    min_fuel = sys.maxsize
+
+    for n in line_range:
+        fuel = 0
+        for k, v in crabs.items():
+            fuel += f(n - k) * v
+            if fuel > min_fuel:
+                # Stop calculation since it's futile
+                # Can reduce execution time by 40%
+                break
+
+        if min_fuel > fuel:
+            min_fuel = fuel
+
+    return min_fuel
 
 
 def main():
     input_file = "07-input"
 
     crabs = {}
-    population = 0
-    lowest = 99999
-    highest = 0
+    lines = list(map(int, open(input_file).readline().split(',')))
+    for i in lines:
+        crabs[i] = crabs.get(i, 0) + 1
 
-    with open(input_file) as fp:
-        for line in fp:
-            line = line.strip()
-            if line:
-                s = line.split(',')
-                for i in s:
-                    i = int(i)
-                    crabs[i] = crabs.get(i, 0) + 1
-                    if i < lowest:
-                        lowest = i
-                    if i > highest:
-                        highest = i
-                    population += 1
+    # locations = crabs.keys()
+    # print(len(lines), "crabs in", len(locations), "locations")
+    # print("Lowest position", min(locations))
+    # print("Highest position", max(locations))
 
-    print("Population:", population)
-    print("Lowest position", lowest)
-    print("Highest position", highest)
-    print("Locations", len(crabs))
-
-    # calculate best guess
-    best_guess = make_best_guess(crabs)
-    cost_to_beat = calc_cost(crabs, best_guess, sys.maxsize)
-    print("Best guess is", cost_to_beat, "for position", best_guess)
-
-    for x in range(lowest, highest+1):
-        cost = calc_cost(crabs, x, cost_to_beat)
-        if cost and cost < cost_to_beat:
-            print("Better answer is", cost, "for position", x)
-            cost_to_beat = cost
+    print("part 1 answer:", solve(crabs, lambda x: abs(x)))
+    print("part 2 answer:", solve(crabs, lambda x: abs(x)*(abs(x)+1)/2))
+    return
 
 
 if __name__ == '__main__':
