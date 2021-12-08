@@ -7,6 +7,7 @@ def solve1(input):
     """Solve part 1"""
     bins = {}
     msgs = list(map(get_message, input))
+
     for msg in msgs:
         words = msg.split()
         for word in words:
@@ -21,7 +22,7 @@ def decode_msg(decoder, msg):
     for word in words:
         s = "".join(sorted(word))  # alphbetize for lookup
         clear_words.append(decoder.get(s))
-    result = "".join(map(str, clear_words))
+    result = "".join(clear_words)
     return result
 
 
@@ -82,7 +83,7 @@ def create_decoder(bins):
                 decoder[6] = decoder.get(6, s)
 
     # swap key and value
-    inv_map = {v: k for k, v in decoder.items()}
+    inv_map = {v: str(k) for k, v in decoder.items()}
     return inv_map
 
 
