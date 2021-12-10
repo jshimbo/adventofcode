@@ -86,7 +86,7 @@ def main():
     answer1 = 0
     answer2 = 0
 
-    input_file = '09-input'
+    input_file = 'input/09-input'
 
     lines = []
     with open(input_file) as fp:

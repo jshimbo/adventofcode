@@ -111,7 +111,7 @@ def solve2(lines):
 
 
 def main():
-    input_file = "08-input"
+    input_file = "input/08-input"
     lines = open(input_file).readlines()
 
     print("Answer 1", solve1(lines))
