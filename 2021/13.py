@@ -6,8 +6,8 @@ def search_sheet(sheet, dot):
 
 
 def print_paper(sheet):
-    rows = 7
-    cols = 40
+    rows = max(sheet, key=lambda item: item[1])[1] + 1
+    cols = max(sheet, key=lambda item: item[0])[0] + 1
     content = [[" "]*cols for _ in range(rows)]
 
     for dot in sheet:
