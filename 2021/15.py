@@ -2,15 +2,6 @@ import sys
 from heapq import heappush, heappop
 
 
-def print_board(board):
-    for _, row in enumerate(board):
-        line = ''
-        for _, c in enumerate(row):
-            line += str(c)
-        print(line)
-    return
-
-
 def print_board_path(board, path):
     color_path = '\u001b[32;1m'
     color_reset = '\u001b[0m'
@@ -34,7 +25,7 @@ def trip_cost(board, path):
     return cost
 
 
-def heuristic(board, goal, next):
+def heuristic(board, next):
     return 0
 
 
@@ -50,7 +41,6 @@ def get_neighbors(board, pos):
     height = len(board)
     width = len(board[0])
 
-    # edges
     for x2 in [x - 1, x + 1]:
         if 0 <= x2 < width:
             neighbors.append((x2, y))
@@ -98,14 +88,22 @@ def a_star_search(board, start, goal):
     while len(open_list) != 0:
         current = heappop(open_list)[1]
         if current == goal:
-            # print(came_from)
-            return reconstruct_path(came_from, start, goal)
+            result = g_score[goal]
+            # check result against path
+            path = reconstruct_path(came_from, start, goal)
+            if trip_cost(board, path) != result:
+                print("Assert failed: g score and path disagree")
+                return False
+            # path.append(start)
+            # print_board_path(board, path)
+            return result
+
         neighbors = get_neighbors(board, current)
         for next in neighbors:
             new_cost = g_score[current] + get_cost(board, next)
             if next not in g_score or new_cost < g_score[next]:
                 g_score[next] = new_cost
-                priority = new_cost + heuristic(board, goal, next)
+                priority = new_cost + heuristic(board, next)
                 # f score is the best guess cost if we go through this node
                 # priority queue includes f_score functionality
                 heappush(open_list, (priority, next))
@@ -155,12 +153,7 @@ def main():
     start = (0, 0)
     goal = (len(board[0])-1, len(board)-1)
 
-    path = a_star_search(board, start, goal)
-    # calculate cost before modifying path
-    cost = trip_cost(board, path)
-
-    # path.append(start)
-    # print_board_path(board, path)
+    cost = a_star_search(board, start, goal)
 
     print("Part 1")
     print("Start", start)
@@ -175,12 +168,7 @@ def main():
     start = (0, 0)
     goal = (len(board[0])-1, len(board)-1)
 
-    path = a_star_search(board, start, goal)
-    # calculate cost before modifying path
-    cost = trip_cost(board, path)
-
-    # path.append(start)
-    # print_board_path(board, path)
+    cost = a_star_search(board, start, goal)
 
     print("Start", start)
     print("Goal", goal)
