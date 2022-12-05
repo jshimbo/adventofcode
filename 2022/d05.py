@@ -2,90 +2,32 @@ import re
 
 
 def printShip(ship):
-    str = ""
-    deck_num = 1
-    for deck in ship:
-        str = "  ".join(deck)
-        print(str, ": ", deck_num)
-        deck_num += 1
-
-
-def zip_char_array(dest, src):
-    for x in range(len(dest)):
-        if dest[x] == ' ':
-            dest[x] = src[x]
-    return dest
+    print("~~")
+    for stack in ship:
+        print(stack)
+    print("~~")
 
 
 def getAnswer(ship):
     top_crates = []
-    for _ in range(len(ship[0])):
-        top_crates.append(' ')
-
     for deck in ship:
-        top_crates = zip_char_array(top_crates, deck)
+        top_crates.append(deck[-1:])
 
     answer = "".join(top_crates)
     return answer
 
 
-def addDecks(ship, num):
-    new_ship = []
-    count = 0
-    for _ in range(num):
-        # create a blank deck and initialize
-        new_deck = []
-        for _ in range(len(ship[0])):
-            new_deck.append(' ')
-
-        new_ship.append(new_deck)
-
-    ship = new_ship + ship
-    return ship
-
-
 def moveCrates(ship, cnt, src, dest, crane_model):
-
-    if cnt > len(ship):
-        print("Error: count is ", cnt, " but ship height is ", len(ship))
-
     # pick crates
-    cache = []
-    count = cnt
-    for deck in ship:
-        if deck[src-1] != ' ':
-            cache.append(deck[src-1])
-            deck[src-1] = ' '
-            count -= 1
-        if count < 1:
-            break
+    stack = ship[src-1]
+    cache = stack[-cnt:]
+    ship[src-1] = stack[:-cnt]
 
-    # find top of dest and add decks if needed
-    dest_floor = 0  # 0 is top of ship
-    for deck in ship:
-        if deck[dest-1] == ' ':
-            dest_floor += 1
-        else:
-            break
-
-    if dest_floor < cnt:
-        delta = cnt - dest_floor
-        ship = addDecks(ship, delta)
-        dest_floor += delta
+    if crane_model == 9000:
+        cache = cache[::-1]  # reverse order of crates
 
     # place crates
-    if crane_model == 9000:
-        y = dest_floor - 1
-        # print("Moving", cache, "from", src, "to", dest, "row ", y + 1)
-        for c in cache:
-            ship[y][dest-1] = c
-            y -= 1
-    else:
-        y = dest_floor - cnt
-        # print("Moving", cache, "from", src, "to", dest, "row ", y + 1)
-        for c in cache:
-            ship[y][dest-1] = c
-            y += 1
+    ship[dest-1] += cache
 
     return ship
 
@@ -93,21 +35,30 @@ def moveCrates(ship, cnt, src, dest, crane_model):
 def solve(crates_s, moves_s, crane_model):
 
     lines = crates_s.splitlines()
+    lines.pop()
+    num_stacks = int((len(lines[0]) + 1) / 4)
+
+    # create empty ship
     ship = []
-    for l in lines:
-        width = len(l)
-        layer = []
+    for _ in range(num_stacks):
+        ship.append("")
+
+    # rotate array and use strings instead
+    for layer in reversed(lines):
+        width = len(layer)
+        j = 0
         for x in range(1, width, 4):
-            c = l[x]
-            layer.append(c)
-        ship.append(layer)
-        layer = []
+            c = layer[x]
+            if c != ' ':
+                ship[j] += c
+            j += 1
 
-    ship.pop()
+    # done initializing
 
-    lines = moves_s.splitlines()
-    for l in lines:
-        x = re.findall(r'\d+', l)
+    # start processing moves
+    moves = moves_s.splitlines()
+    for move in moves:
+        x = re.findall(r'\d+', move)
         cnt = int(x[0])
         src = int(x[1])
         dest = int(x[2])
