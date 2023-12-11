@@ -14,14 +14,35 @@ def listGalaxies(space):
     return galaxies
 
 
-def makeSpace(lines):
-    space = []
+def getDistance(g1, g2, empty_rows, empty_columns, expansion_factor=1):
+    # base distance
+    distance = abs(g1[0] - g2[0]) + abs(g1[1] - g2[1])
 
-    for l in lines:
+    # add expansion
+    empty = 0
+    for x in range(*sorted([g1[0], g2[0]])):
+        if x in empty_columns:
+            empty += 1
+
+    for y in range(*sorted([g1[1], g2[1]])):
+        if y in empty_rows:
+            empty += 1
+
+    distance += empty * max(expansion_factor - 1, 1)
+
+    return distance
+
+
+def solve(lines, expansion_factor):
+    total = 0
+    space = []
+    empty_rows = []
+    empty_columns = []
+
+    for i, l in enumerate(lines):
         row = list(l.strip())
         if all(c == "." for c in row):
-            # make a copy before appending
-            space.append(list(row))
+            empty_rows.append(i)
         space.append(row)
 
     # expand columns
@@ -29,29 +50,17 @@ def makeSpace(lines):
     for row in space[1:]:
         empty_bools = [c and (row[i] == ".") for i, c in enumerate(empty_bools)]
 
-    empty_col_nums = []
     for i, c in enumerate(empty_bools):
         if c:
-            empty_col_nums.append(i)
-
-    empty_col_nums.reverse()
-
-    for row in space:
-        for i in empty_col_nums:
-            row.insert(i, ".")
-
-    return space
-
-
-def solve1(lines):
-    total = 0
-    space = makeSpace(lines)
+            empty_columns.append(i)
 
     galaxies = listGalaxies(space)
+    num_pairs = 0
 
     for i1, g1 in enumerate(galaxies[:-1]):
-        for i2, g2 in enumerate(galaxies[i1 + 1 :]):
-            total += abs(g1[0] - g2[0]) + abs(g1[1] - g2[1])
+        for g2 in galaxies[i1 + 1 :]:
+            num_pairs += 1
+            total += getDistance(g1, g2, empty_rows, empty_columns, expansion_factor)
 
     return total
 
@@ -61,8 +70,8 @@ def main():
     with open(input_file) as f:
         lines = f.readlines()
 
-    print("Answer to part 1:", solve1(lines))
-    # print("Answer to part 2:", solve2(lines))
+    print("Answer to part 1:", solve(lines, expansion_factor=1))
+    print("Answer to part 2:", solve(lines, expansion_factor=1000000))
 
 
 if __name__ == "__main__":
