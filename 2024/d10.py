@@ -62,7 +62,23 @@ def getScore(m, y, x):
     return score
 
 
-def solve(lines):
+def getPaths(m, y, x):
+    stack = LifoQueue()
+    score = 0
+
+    stack.put((y, x, m[y][x]))
+
+    while not stack.empty():
+        y, x, c = stack.get()
+        if c == 9:
+            score += 1
+        else:
+            stack = lookAround(stack, m, y, x)
+
+    return score
+
+
+def solve(lines, part):
     trailheads = LifoQueue()
     score = 0
     m = makeMap(lines)
@@ -75,7 +91,10 @@ def solve(lines):
     while not trailheads.empty():
         y, x, c = trailheads.get()
 
-        i = getScore(m, y, x)
+        if part == 1:
+            i = getScore(m, y, x)
+        else:
+            i = getPaths(m, y, x)
         score += i
     return score
 
@@ -86,7 +105,8 @@ def main():
     with open(input_file) as f:
         lines = f.readlines()
 
-    print("Answer to part 1:", solve(lines))
+    print("Answer to part 1:", solve(lines, part=1))
+    print("Answer to part 2:", solve(lines, part=2))
 
 
 if __name__ == "__main__":
