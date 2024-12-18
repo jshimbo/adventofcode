@@ -24,6 +24,18 @@ def printMapPath(m, path):
     return
 
 
+def makeMemorySpace(lines, bytes, height, width):
+    memory_space = []
+    for _ in range(height):
+        memory_space.append(list("." * width))
+
+    for i in range(bytes):
+        x, y = map(int, lines[i].strip().split(","))
+        memory_space[y][x] = "#"
+
+    return memory_space
+
+
 def heuristic(a, b):
     (y1, x1) = a
     (y2, x2) = b
@@ -102,13 +114,7 @@ def solve(lines, part):
     width = 71
     bytes = 1024
 
-    memory_space = []
-    for _ in range(height):
-        memory_space.append(list("." * width))
-
-    for i in range(bytes):
-        x, y = map(int, lines[i].strip().split(","))
-        memory_space[y][x] = "#"
+    memory_space = makeMemorySpace(lines, bytes, height, width)
 
     start = (0, 0)
     goal = (height - 1, width - 1)
@@ -119,12 +125,20 @@ def solve(lines, part):
         return len(path)
 
     # else Part 2
-    i = bytes - 1
+
+    # Can we avoid some work?
+    i = (len(lines) - bytes) // 2 + bytes
+    memory_space = memory_space = makeMemorySpace(lines, i, height, width)
+    came_from = a_star_search(memory_space, start, goal)
+    if goal not in came_from:
+        # Answer is in the first half
+        i = bytes - 1
+        memory_space = memory_space = makeMemorySpace(lines, i, height, width)
+
     while i < len(lines):
         came_from = a_star_search(memory_space, start, goal)
         if goal not in came_from:
             x, y = map(int, lines[i].strip().split(","))
-            print("Memory pointer:", i)
             return str(x) + "," + str(y)
         else:
             i += 1
