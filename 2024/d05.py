@@ -1,3 +1,19 @@
+from functools import cmp_to_key
+
+rules = {}
+
+
+def cmpPages(left, right):
+    global rules
+    result = 0
+    if left in rules and right in rules[left]:
+        result = -1
+    elif right in rules and left in rules[right]:
+        result = 1
+
+    return result
+
+
 def checkSeq(seq, rules):
     for i, x in enumerate(seq):
         while i > 0:
@@ -7,10 +23,10 @@ def checkSeq(seq, rules):
     return True
 
 
-def solve1(lines):
+def solve(lines, part):
     total = 0
-    rules = {}
     get_rules = True
+    global rules
 
     for line in lines:
         if get_rules:
@@ -23,12 +39,18 @@ def solve1(lines):
                 elif y not in rules[x]:
                     rules[x].append(y)
             else:
-                get_rules = False
+                get_rules = not get_rules
         else:
             seq = list(x.strip() for x in line.split(","))
-            if checkSeq(seq, rules):
-                midpoint = len(seq) // 2
-                total += int(seq[midpoint])
+            if part == 1:
+                if checkSeq(seq, rules):
+                    midpoint = len(seq) // 2
+                    total += int(seq[midpoint])
+            else:
+                if not checkSeq(seq, rules):
+                    seq2 = sorted(seq, key=cmp_to_key(cmpPages))
+                    midpoint = len(seq2) // 2
+                    total += int(seq2[midpoint])
 
     return total
 
@@ -38,8 +60,8 @@ def main():
     with open(input_file) as f:
         lines = f.readlines()
 
-    print("Answer to part 1:", solve1(lines))
-    # print("Answer to part 2:", solve2(lines))
+    print("Answer to part 1:", solve(lines, 1))
+    print("Answer to part 2:", solve(lines, 2))
 
 
 if __name__ == "__main__":
