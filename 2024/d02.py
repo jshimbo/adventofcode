@@ -1,44 +1,51 @@
-def isSafeBasic(readings):
-    direction = 0
-    previous = 0
-    result = True
+import sys
 
-    for i, r in enumerate(readings):
-        if i > 0:
-            diff = previous - r
-            if diff == 0:
-                result = False
-                break
-            elif diff < 0:  # increasing
-                if direction < 0:
-                    result = False
-                    break
-                else:
-                    direction = 1
-            else:  # decreasing
-                if direction > 0:
-                    result = False
-                    break
-                else:
-                    direction = -1
 
-            # Direction has been checked, now check magnitude
-            if abs(diff) > 3:
-                result = False
-                break
+def isSafe(readings):
+    deltas = [readings[i + 1] - readings[i] for i in range(len(readings) - 1)]
 
-        previous = r
+    # if positive slope
+    positive_slope = None
 
-    return result
+    first = deltas[0]
+    if first == 0:
+        return False
+    else:
+        positive_slope = first > 0
+
+    for d in deltas:
+        if abs(d) > 3 or (positive_slope and d <= 0) or (not positive_slope and d >= 0):
+            return False
+
+    return True
 
 
 def solve(lines):
-    total = 0
+
+    count = 0
     for line in lines:
-        readings = [int(s) for s in line.split()]
-        if isSafeBasic(readings):
-            total += 1
-    return total
+        readings = [int(s) for s in line.strip().split()]
+        if isSafe(readings):
+            count += 1
+
+    print("Answer for part 1:", count)
+
+    # Part 2 Naive Brute Force
+    count = 0
+    for line in lines:
+        readings = [int(s) for s in line.strip().split()]
+        if isSafe(readings):
+            count += 1
+            continue
+
+        for i in range(len(readings)):
+            r2 = readings.copy()
+            del r2[i]
+            if isSafe(r2):
+                count += 1
+                break
+
+    print("Answer for part 2:", count)
 
 
 def main():
@@ -47,7 +54,7 @@ def main():
     with open(input_file) as f:
         lines = f.readlines()
 
-    print("Answer to part 1:", solve(lines))
+    solve(lines)
 
 
 if __name__ == "__main__":
